@@ -1,9 +1,10 @@
-# from fastapi import FastAPI
-#
-# app = FastAPI()
-#
-# fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
-#
-# @app.get("/items/")
-# async def read_item(skip: int = 0, limit: int = 10):
-#     return fake_items_db[skip : skip + limit]
+from app.database import Base, engine
+from app.routes import notes_router
+from fastapi import FastAPI
+
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title = "Notes API with AI Summarizer")
+
+app.include_router(notes_router)
