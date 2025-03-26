@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes + AI</title>
+</head>
+<body>
+    <h1>📝 Notes with AI Summarizer</h1>
+
+    <form action="/create" method="post">
+        <input type="text" name="title" placeholder="Title" required><br>
+        <textarea name="content" placeholder="Write your note..." rows="5" cols="40" required></textarea><br>
+        <button type="submit">Add Note</button>
+    </form>
+
+    <hr>
+
+    <h2>Your Notes:</h2>
+    {% for note in notes %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <strong>{{ note.title }}</strong><br>
+            {{ note.content }}<br>
+            <form action="/summarize/{{ note.id }}" method="post" style="margin-top:10px;">
+                <button type="submit">Summarize</button>
+            </form>
+            {% if note.summary %}
+                <div><strong>Summary:</strong> {{ note.summary }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>

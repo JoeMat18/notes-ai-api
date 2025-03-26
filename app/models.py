@@ -11,3 +11,4 @@ class Note(Base):
     title = Column(String(100), nullable=False)
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None))
+    summary = Column(Text, nullable=True)
