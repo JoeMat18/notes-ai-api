@@ -5,9 +5,12 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from app.database import engine, SessionLocal, Base
 from app import models, ai
+from app.routes import notes_router
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+app.include_router(notes_router)
+
 Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory="app/templates")
 
