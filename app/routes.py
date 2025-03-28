@@ -47,20 +47,20 @@ def read_note(
 
 @notes_router.put("/{note_id}", response_model=schemas.Note, summary="Update a note")
 def update_note(
+    note_update: schemas.NoteUpdate,
     note_id: int = Path(..., description="ID of the note to update"),
-    note: schemas.NoteCreate = ...,
     db: Session = Depends(get_db)
 ):
     """
     Update a note's title and content by ID.
     """
-    note = crud.update_note(db, note_id, note)
-    if not note:
+    update_note = crud.update_note(db, note_id, note_update)
+    if not update_note:
         raise HTTPException(status_code=404, detail="Note not found")
-    return note
+    return update_note
 
 
-@notes_router.delete("/{note_id}", response_model=schemas.Note, summary="Delete a note")
+@notes_router.delete("/{note_id}", summary="Delete a note")
 def delete_note(
     note_id: int = Path(..., description="ID of the note to delete"),
     db: Session = Depends(get_db)
@@ -71,7 +71,7 @@ def delete_note(
     note = crud.delete_note(db, note_id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
-    return {"message": f"Note '{note_id}' deleted"}
+    return {"message": f"Note '{note.title}' deleted"}
 
 
 
@@ -94,3 +94,17 @@ def summarize_note(
         "original": note.content,
         "summary": summary
     }
+
+@notes_router.delete("/delete/all", summary="Delete all notes")
+def delete_all_notes_endpoint(
+        confirm: bool = Query(False, description="Set to true to confirm deletion"),
+        db: Session = Depends(get_db)
+):
+    """
+    Deletes all notes from the database.
+    """
+    if not confirm:
+        raise HTTPException(status_code=400, detail="Set 'confirm=true' to delete all notes")
+
+    crud.delete_all_notes(db)
+    return {"message": "All notes have been deleted"}

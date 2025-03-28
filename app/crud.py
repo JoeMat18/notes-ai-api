@@ -22,7 +22,7 @@ def get_note_by_id(db: Session, note_id: int):
     """
     ???
     """
-    return db.query(models.Note).filter(models.Note.id == note_id)
+    return db.query(models.Note).filter(models.Note.id == note_id).first()
 
 def delete_note(db: Session, note_id: int):
     """
@@ -34,14 +34,23 @@ def delete_note(db: Session, note_id: int):
         db.commit()
     return note
 
-def update_note(db: Session, note_id: int, note_data: schemas.NoteCreate):
+def delete_all_notes(db: Session):
+    """
+    ???
+    """
+    db.query(models.Note).delete()
+    db.commit()
+
+def update_note(db: Session, note_id: int, note_update: schemas.NoteUpdate):
     """
     ???
     """
     note = db.query(models.Note).filter(models.Note.id == note_id).first()
     if note:
-        note.title = note_data.title
-        note.content = note_data.content
+        if note_update.title is not None and note_update.title != "string":
+            note.title = note_update.title
+        if note_update.content is not None and note_update.content != "string":
+            note.content = note_update.content
         db.commit()
         db.refresh(note)
     return note
