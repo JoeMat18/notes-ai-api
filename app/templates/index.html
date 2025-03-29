@@ -2,28 +2,51 @@
 <html>
 <head>
     <title>Notes + AI</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        textarea { width: 300px; }
+        .note { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    </style>
 </head>
 <body>
     <h1>📝 Notes with AI Summarizer</h1>
 
     <form action="/create" method="post">
         <input type="text" name="title" placeholder="Title" required><br>
-        <textarea name="content" placeholder="Write your note..." rows="5" cols="40" required></textarea><br>
+        <textarea name="content" placeholder="Write your note..." rows="5" required></textarea><br>
         <button type="submit">Add Note</button>
+    </form>
+
+    <form action="/search" method="get" style="margin-top: 20px;">
+        <input type="text" name="query" placeholder="Search..." required>
+        <button type="submit">Search</button>
+    </form>
+
+    <form action="/delete_all" method="post" onsubmit="return confirm('Are you sure you want to delete all notes?');" style="margin-top: 20px;">
+        <button type="submit">❌ Delete All Notes</button>
     </form>
 
     <hr>
 
     <h2>Your Notes:</h2>
     {% for note in notes %}
-        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-            <strong>{{ note.title }}</strong><br>
-            {{ note.content }}<br>
-            <form action="/summarize/{{ note.id }}" method="post" style="margin-top:10px;">
+        <div class="note">
+            <form action="/update/{{ note.id }}" method="post">
+                <input type="text" name="title" value="{{ note.title }}"><br>
+                <textarea name="content" rows="4">{{ note.content }}</textarea><br>
+                <button type="submit">Update</button>
+            </form>
+
+            <form action="/summarize/{{ note.id }}" method="post" style="display:inline;">
                 <button type="submit">Summarize</button>
             </form>
+
+            <form action="/delete/{{ note.id }}" method="post" style="display:inline;" onsubmit="return confirm('Delete this note?');">
+                <button type="submit">Delete</button>
+            </form>
+
             {% if note.summary %}
-                <div><strong>Summary:</strong> {{ note.summary }}</div>
+                <p><strong>Summary:</strong> {{ note.summary }}</p>
             {% endif %}
         </div>
     {% endfor %}
