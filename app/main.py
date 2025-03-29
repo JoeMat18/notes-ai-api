@@ -38,3 +38,38 @@ def summarize_note(note_id: int):
         note.summary = summary
         db.commit()
     return RedirectResponse("/", status_code=303)
+
+@app.post("/delete/{note_id}")
+def delete_note(note_id: int):
+    db = SessionLocal()
+    note = db.query(models.Note).filter(models.Note.id == note_id).first()
+    if note:
+        db.delete(note)
+        db.commit()
+    return RedirectResponse("/", status_code=303)
+
+@app.post("/delete_all")
+def delete_all_notes():
+    db = SessionLocal()
+    db.query(models.Note).delete()
+    db.commit()
+    return RedirectResponse("/", status_code=303)
+
+@app.post("/update/{note_id}")
+def update_note(note_id: int, title: str = Form(...), content: str = Form(...)):
+    db = SessionLocal()
+    note = db.query(models.Note).filter(models.Note.id == note_id).first()
+    if note:
+        note.title = title
+        note.content = content
+        db.commit()
+    return RedirectResponse("/", status_code=303)
+
+@app.get("/search")
+def search_notes(query: str, request: Request):
+    db = SessionLocal()
+    results = db.query(models.Note).filter(
+        models.Note.title.ilike(f"%{query}%") |
+        models.Note.content.ilike(f"%{query}%")
+    ).all()
+    return templates.TemplateResponse("index.html", {"request": request, "notes": results})

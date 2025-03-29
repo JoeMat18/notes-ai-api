@@ -20,30 +20,6 @@ def create_note(note: schemas.NoteCreate, db: Session = Depends(get_db)):
     """
     return crud.create_note(db=db, note=note)
 
-@notes_router.get("/", response_model=list[schemas.Note], summary="List all notes")
-def read_notes(
-        skip: int = Query(0, description="How many notes to skip"),
-        limit: int = Query(100, description="Maximum number of notes to return"),
-        db: Session = Depends(get_db)
-):
-    """
-    Get a list of all notes with pagination.
-    """
-    return crud.get_all_notes(db=db, skip=skip, limit=limit)
-
-
-@notes_router.get("/{note_id}", response_model=schemas.Note, summary="Get a note by ID")
-def read_note(
-        note_id: int = Path(..., description="ID of the note"),
-        db: Session = Depends(get_db)
-):
-    """
-    Get a single note by its ID.
-    """
-    note = crud.get_note_by_id(db, note_id)
-    if not note:
-        raise HTTPException(status_code=404, detail="Note not found")
-    return note
 
 @notes_router.put("/{note_id}", response_model=schemas.Note, summary="Update a note")
 def update_note(
@@ -108,3 +84,39 @@ def delete_all_notes_endpoint(
 
     crud.delete_all_notes(db)
     return {"message": "All notes have been deleted"}
+
+@notes_router.get("/search", response_model=list[schemas.Note], summary="Search notes by keyword")
+def search_notes(
+    query: str = Query(..., description="Search in title and content"),
+    db: Session = Depends(get_db)
+):
+    """
+    Search for notes by keyword in title or content.
+    """
+    return crud.search_note(db, query)
+
+@notes_router.get("/", response_model=list[schemas.Note], summary="List all notes")
+def read_notes(
+        skip: int = Query(0, description="How many notes to skip"),
+        limit: int = Query(100, description="Maximum number of notes to return"),
+        db: Session = Depends(get_db)
+):
+    """
+    Get a list of all notes with pagination.
+    """
+    return crud.get_all_notes(db=db, skip=skip, limit=limit)
+
+@notes_router.get("/{note_id}", response_model=schemas.Note, summary="Get a note by ID")
+def read_note(
+        note_id: int = Path(..., description="ID of the note"),
+        db: Session = Depends(get_db)
+):
+    """
+    Get a single note by its ID.
+    """
+    note = crud.get_note_by_id(db, note_id)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return note
+
+
