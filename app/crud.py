@@ -54,3 +54,12 @@ def update_note(db: Session, note_id: int, note_update: schemas.NoteUpdate):
         db.commit()
         db.refresh(note)
     return note
+
+def search_note(db: Session, query: str):
+    """
+    Search for notes containing the query string in title or content.
+    """
+    return db.query(models.Note).filter(
+        models.Note.title.ilike(f"%{query}%") |
+        models.Note.content.ilike(f"{query}%")
+    ).all()

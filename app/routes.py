@@ -108,3 +108,15 @@ def delete_all_notes_endpoint(
 
     crud.delete_all_notes(db)
     return {"message": "All notes have been deleted"}
+
+@notes_router.get("/search", response_model=list[schemas.Note], summary="Search notes by keyword")
+def search_notes(
+    query: str = Query(..., description="Search in title and content"),
+    db: Session = Depends(get_db)
+):
+    """
+    Search for notes by keyword in title or content.
+    """
+    return crud.search_note(db, query)
+
+
