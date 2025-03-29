@@ -7,3 +7,4 @@ python-dotenv
 transformers
 torch
 jinja2
+openai

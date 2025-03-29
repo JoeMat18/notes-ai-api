@@ -17,5 +17,6 @@ class Note(BaseModel):
     created_at: datetime
     summary: Optional[str] = None
 
+
     class Config:
         orm_mode = True # Allows to work with SQLAlchemy objects
